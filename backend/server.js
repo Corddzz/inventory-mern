@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import inventoryRoutes from "./src/routes/inventoryRoutes.js";
+import roomRoutes from "./src/routes/roomRoutes.js";
 
 dotenv.config();
 
@@ -18,5 +19,6 @@ app.get("/", (req, res) => {
 
 // Middlware
 app.use("/", inventoryRoutes);
+app.use("/", roomRoutes);
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
