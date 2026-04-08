@@ -11,16 +11,28 @@ const PORT = process.env.PORT || 8000;
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors({ origin: "*" }));
+app.use(cors({ origin: process.env.CORS_ORIGIN, credentials: true }));
 
 app.get("/", (req, res) => {
   console.log("Hello World!");
   res.send("Hello World!");
 });
 
-// Middlware
+app.post("/register", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    console.log({ email: email, password: hashedPassword });
+  } catch (error) {
+    console.error({ message: error });
+    throw error;
+  }
+});
+
 app.use("/", inventoryRoutes);
-app.use("/", roomRoutes);
+app.use("/", authRoutes);
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
