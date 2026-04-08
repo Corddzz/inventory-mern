@@ -1,6 +1,11 @@
-import React from "react";
-import { useEffect } from "react";
-import { createInventory, fetchInventory } from "../api/axios.js";
+import { useState, useEffect } from "react";
+import {
+  createInventory,
+  fetchInventory,
+  fetchInventoryById,
+  updateInventory,
+  deleteInventory,
+} from "../api/axios.js";
 import {
   PencilIcon,
   PlusIcon,
@@ -13,11 +18,14 @@ import Card from "../components/Card.jsx";
 import Modal from "../components/Modal.jsx";
 import Field from "../components/Field.jsx";
 import Badge from "../components/Badge.jsx";
+import Status from "../components/Status.jsx";
 
 const Inventory = () => {
-  const [isModalOpen, setIsModalOpen] = React.useState(false);
-  const [inventoryItems, setInventoryItems] = React.useState([]);
-  const [formInputs, setFormInputs] = React.useState({
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [inventoryItems, setInventoryItems] = useState([]);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [formInputs, setFormInputs] = useState({
     inventory_name: "",
     cat_name: "",
     brand: "",
@@ -27,9 +35,32 @@ const Inventory = () => {
   });
 
   const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setIsEditing(false);
+    setIsDeleting(false);
+    setFormInputs({
+      inventory_name: "",
+      cat_name: "",
+      brand: "",
+      qty: 1,
+      name: "",
+      status: "",
+    });
+  };
 
   const LOW_STOCK_THRESHOLD = 5;
+
+  const handleEditClick = async (inventory_id) => {
+    try {
+      const data = await fetchInventoryById(inventory_id);
+      setFormInputs(data);
+      setIsEditing(true);
+      openModal();
+    } catch (error) {
+      console.error("Error fetching item:", error);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -40,25 +71,38 @@ const Inventory = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log(formInputs);
+  const handleDeleteClick = (item) => {
+    setFormInputs(item);
+    setIsDeleting(true);
+    openModal();
+  };
 
+  const handleDelete = async (inventory_id) => {
     try {
-      await createInventory(formInputs);
+      await deleteInventory(inventory_id);
       const result = await fetchInventory();
       setInventoryItems(result);
       closeModal();
-      setFormInputs({
-        inventory_name: "",
-        cat_name: "",
-        brand: "",
-        qty: 1,
-        name: "",
-        status: "",
-      });
     } catch (error) {
-      console.error("Error inserting item in the table", error);
+      console.error("Error deleting item:", error);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (isEditing) {
+        await updateInventory(formInputs);
+        closeModal();
+      } else {
+        await createInventory(formInputs);
+      }
+
+      const result = await fetchInventory();
+      setInventoryItems(result);
+      closeModal();
+    } catch (error) {
+      console.error("Error submitting form:", error);
     }
   };
 
@@ -104,7 +148,7 @@ const Inventory = () => {
           />
           <Card
             label="Assigned"
-            value={3}
+            value={inventoryItems.filter((i) => i.status === "Good").length}
             valueColor="text-amber-400"
             sub="on computers"
           />
@@ -215,8 +259,10 @@ const Inventory = () => {
                       <td className="px-5 py-4 text-sm text-zinc-400">
                         <div className="flex items-center gap-2">
                           <span className="flex items-center gap-1.5 text-xs text-green-400 font-semibold">
-                            <span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block" />
-                            {item.status}
+                            <span
+                              className={`w-1.5 h-1.5 rounded-full inline-block ${item.status === "Good" ? "bg-green-400" : "bg-red-400"}`}
+                            />
+                            <Status status={item.status} />
                           </span>
                         </div>
                       </td>
@@ -226,10 +272,16 @@ const Inventory = () => {
 
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-2">
-                          <button className="p-1.5 rounded-lg bg-zinc-800 text-zinc-400 hover:bg-sky-500/10 hover:text-sky-400 transition-colors">
+                          <button
+                            onClick={() => handleEditClick(item.inventory_id)}
+                            className="p-1.5 rounded-lg bg-zinc-800 text-zinc-400 hover:bg-sky-500/10 hover:text-sky-400 transition-colors"
+                          >
                             <PencilIcon size={14} />
                           </button>
-                          <button className="p-1.5 rounded-lg bg-zinc-800 text-zinc-400 hover:bg-red-500/10 hover:text-red-400 transition-colors">
+                          <button
+                            onClick={() => handleDeleteClick(item)}
+                            className="p-1.5 rounded-lg bg-zinc-800 text-zinc-400 hover:bg-red-500/10 hover:text-red-400 transition-colors"
+                          >
                             <Trash2Icon size={14} />
                           </button>
                         </div>
@@ -243,24 +295,212 @@ const Inventory = () => {
         </div>
       </div>
 
-      {isModalOpen && (
+      {isModalOpen && !isDeleting && (
         <Modal>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-base font-bold text-zinc-100">
-                📦 Add New Item
-              </h2>
+            {/* Header */}
+            <div className="flex items-start justify-between mb-2">
+              <div>
+                <h2 className="text-sm font-semibold text-zinc-100">
+                  {isEditing ? "✏️ Edit Item" : "📦 Add New Item"}
+                </h2>
+                <p className="text-[11px] text-zinc-600 mt-0.5">
+                  Fill in all required fields below
+                </p>
+              </div>
               <button
                 className="text-zinc-500 hover:text-zinc-100 text-lg leading-none transition-colors"
+                type="button"
                 onClick={closeModal}
               >
                 ✕
               </button>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="col-span-2">
+
+            {/* Section 1 — Item details */}
+            <div className="border-l-2 border-indigo-400 pl-3">
+              <p className="text-[10px] font-semibold text-indigo-400 tracking-widest uppercase mb-3">
+                Item details
+              </p>
+              <div className="grid gap-3">
+                <div className="col-span-3">
+                  <Field label="Item Name">
+                    <input
+                      autoComplete="off"
+                      name="inventory_name"
+                      type="text"
+                      className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-zinc-100 text-sm placeholder-zinc-700 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 transition-all"
+                      required
+                      value={formInputs.inventory_name}
+                      onChange={handleChange}
+                    />
+                  </Field>
+                </div>
+                <Field label="Category">
+                  <select
+                    name="cat_name"
+                    className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-zinc-100 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 transition-all cursor-pointer"
+                    required
+                    value={formInputs.cat_name}
+                    onChange={handleChange}
+                  >
+                    <option value="" disabled>
+                      Select Category
+                    </option>
+                    <option value="Equipment">Equipment</option>
+                    <option value="Tools">Tools</option>
+                    <option value="Consumables">Consumables</option>
+                  </select>
+                </Field>
+                <Field label="Brand">
+                  <input
+                    name="brand"
+                    autoComplete="off"
+                    type="text"
+                    className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-zinc-100 text-sm placeholder-zinc-700 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 transition-all"
+                    required
+                    value={formInputs.brand}
+                    onChange={handleChange}
+                  />
+                </Field>
+              </div>
+            </div>
+
+            {/* Section 2 — Stock & location */}
+            <div className="border-l-2 border-cyan-500 pl-3">
+              <p className="text-[10px] font-semibold text-cyan-500 tracking-widest uppercase mb-3">
+                Stock &amp; location
+              </p>
+              <div className="grid grid-cols-3 gap-3">
+                <div className="col-span-2">
+                  <Field label="Quantity">
+                    <input
+                      name="qty"
+                      type="number"
+                      min={1}
+                      className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-zinc-100 text-sm placeholder-zinc-700 outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 transition-all"
+                      required
+                      value={formInputs.qty}
+                      onChange={handleChange}
+                    />
+                  </Field>
+                </div>
+                <Field label="Unit">
+                  <select
+                    name="unit"
+                    className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-zinc-100 text-sm outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 transition-all cursor-pointer"
+                    required
+                    value={formInputs.unit}
+                    onChange={handleChange}
+                  >
+                    <option value="" disabled>
+                      Select Unit
+                    </option>
+                    <option value="pcs">pcs</option>
+                    <option value="sets">sets</option>
+                    <option value="boxes">boxes</option>
+                    <option value="packs">packs</option>
+                    <option value="reams">reams</option>
+                    <option value="roll">roll</option>
+                    <option value="meter">meter</option>
+                  </select>
+                </Field>
+                <div className="col-span-2">
+                  <Field label="Room">
+                    <select
+                      name="name"
+                      className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-zinc-100 text-sm outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 transition-all cursor-pointer"
+                      required
+                      value={formInputs.name}
+                      onChange={handleChange}
+                    >
+                      <option value="" disabled>
+                        Select Room
+                      </option>
+                      <option value="IT Office">IT Office</option>
+                      <option value="Computer Lab 1">Computer Lab 1</option>
+                      <option value="Computer Lab 2">Computer Lab 2</option>
+                      <option value="Computer Lab 3">Computer Lab 3</option>
+                    </select>
+                  </Field>
+                </div>
+                <Field label="Status">
+                  <select
+                    name="status"
+                    className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-zinc-100 text-sm outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 transition-all cursor-pointer"
+                    required
+                    value={formInputs.status}
+                    onChange={handleChange}
+                  >
+                    <option value="" disabled>
+                      Select Status
+                    </option>
+                    <option value="Good">Good</option>
+                    <option value="Defective">Defective</option>
+                  </select>
+                </Field>
+              </div>
+            </div>
+
+            {/* Section 3 — Additional notes */}
+            <div className="border-l-2 border-zinc-700 pl-3">
+              <p className="text-[10px] font-semibold text-zinc-600 tracking-widest uppercase mb-3">
+                Additional notes
+              </p>
+              <div className="col-span-3">
+                <Field label="">
+                  <textarea
+                    name="notes"
+                    className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-zinc-100 text-sm placeholder-zinc-700 outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500/20 transition-all resize-none"
+                    rows={3}
+                    placeholder="Enter any additional notes..."
+                    value={formInputs.notes}
+                    onChange={handleChange}
+                  />
+                </Field>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="flex justify-end gap-3 pt-3 border-t border-zinc-800">
+              <button
+                type="button"
+                onClick={closeModal}
+                className="px-4 py-1.5 rounded-lg text-sm font-medium text-zinc-500 border border-zinc-800 hover:bg-zinc-800 hover:text-zinc-100 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 rounded-lg text-sm font-semibold bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 transition-colors"
+              >
+                {isEditing ? "💾 Update Item" : "💾 Save Item"}
+              </button>
+            </div>
+          </form>
+        </Modal>
+      )}
+
+      {/* {isModalOpen && !isDeleting && (
+        <Modal>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-base font-bold text-zinc-100">
+                {isEditing ? "✏️ Edit Item" : "📦 Add New Item"}
+              </h2>
+              <button
+                className="text-zinc-500 hover:text-zinc-100 text-lg leading-none transition-colors"
+                type="button"
+                onClick={closeModal}
+              >
+                ✕
+              </button>
+            </div>
+            <div className="grid gap-4 mb-4">
+              <div className="col-span-3">
                 <Field label="Item Name">
                   <input
+                    autoComplete="off"
                     name="inventory_name"
                     type="text"
                     className="w-full px-3 py-2 rounded-lg bg-zinc-800 border border-zinc-700 text-zinc-100 text-sm placeholder-zinc-600 outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/30 transition-all"
@@ -289,6 +529,7 @@ const Inventory = () => {
               <Field label="Brand">
                 <input
                   name="brand"
+                  autoComplete="off"
                   type="text"
                   className="w-full px-3 py-2 rounded-lg bg-zinc-800 border border-zinc-700 text-zinc-100 text-sm placeholder-zinc-600 outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/30 transition-all"
                   required
@@ -307,6 +548,24 @@ const Inventory = () => {
                   onChange={handleChange}
                 />
               </Field>
+              <Field label="Unit">
+                <select
+                  name=""
+                  className="w-full px-3 py-2 rounded-lg bg-zinc-800 border border-zinc-700 text-zinc-100 text-sm placeholder-zinc-600 outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/30 transition-all"
+                  required
+                >
+                  <option value="" disabled>
+                    Select Unit
+                  </option>
+                  <option value="pcs">pcs</option>
+                  <option value="sets">sets</option>
+                  <option value="boxes">boxes</option>
+                  <option value="packs">packs</option>
+                  <option value="reams">reams</option>
+                  <option value="roll">roll</option>
+                  <option value="meter">meter</option>
+                </select>
+              </Field>
               <Field label="Room">
                 <select
                   name="name"
@@ -318,28 +577,37 @@ const Inventory = () => {
                   <option value="" disabled>
                     Select Room
                   </option>
-                  <option value="IT Dept">IT Dept</option>
-                  <option value="Elem Dept">Elem Dept</option>
-                  <option value="HS Dept">HS Dept</option>
-                  <option value="SHS Dept">SHS Dept</option>
-                  <option value="College Dept">College Dept</option>
+                  <option value="IT Office">IT Office</option>
+                  <option value="Computer Lab 1">Computer Lab 1</option>
+                  <option value="Computer Lab 2">Computer Lab 2</option>
+                  <option value="Computer Lab 3">Computer Lab 3</option>
                 </select>
               </Field>
-              <div className="col-span-2">
-                <Field label="Status">
-                  <select
-                    name="status"
-                    className="w-full px-3 py-2 rounded-lg bg-zinc-800 border border-zinc-700 text-zinc-100 text-sm placeholder-zinc-600 outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/30 transition-all"
-                    required
-                    value={formInputs.status}
+              <Field label="Status">
+                <select
+                  name="status"
+                  className="w-full px-3 py-2 rounded-lg bg-zinc-800 border border-zinc-700 text-zinc-100 text-sm placeholder-zinc-600 outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/30 transition-all"
+                  required
+                  value={formInputs.status}
+                  onChange={handleChange}
+                >
+                  <option value="" disabled>
+                    Select Status
+                  </option>
+                  <option value="Good">Good</option>
+                  <option value="Defective">Defective</option>
+                </select>
+              </Field>
+              <div className="col-span-3">
+                <Field label="Additional Notes">
+                  <textarea
+                    name="notes"
+                    className="w-full px-3 py-2 rounded-lg bg-zinc-800 border border-zinc-700 text-zinc-100 text-sm placeholder-zinc-600 outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/30 transition-all resize-none"
+                    rows={3}
+                    placeholder="Enter any additional notes..."
+                    value={formInputs.notes}
                     onChange={handleChange}
-                  >
-                    <option value="" disabled>
-                      Select Status
-                    </option>
-                    <option value="Good">Good</option>
-                    <option value="Defective">Defective</option>
-                  </select>
+                  />
                 </Field>
               </div>
             </div>
@@ -355,10 +623,60 @@ const Inventory = () => {
                 type="submit"
                 className="px-4 py-2 rounded-lg text-sm font-semibold bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 transition-colors"
               >
-                💾 Save Item
+                {isEditing ? "💾 Update Item" : "💾 Save Item"}
               </button>
             </div>
           </form>
+        </Modal>
+      )} */}
+
+      {isModalOpen && isDeleting && (
+        <Modal>
+          <div className="flex flex-col gap-6">
+            <div className="flex items-center justify-between">
+              <div className="p-2 rounded-xl bg-red-500/10 border border-red-500/20">
+                <Trash2Icon size={14} className="text-red-400" />
+              </div>
+              <button
+                type="button"
+                onClick={closeModal}
+                className="text-zinc-600 hover:text-zinc-300 transition-colors text-lg leading-none"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div>
+              <h2 className="text-sm font-bold text-zinc-100 mb-1">
+                Delete this item?
+              </h2>
+              <p className="text-xs text-zinc-500 leading-relaxed">
+                You are about to delete{" "}
+                <span className="text-zinc-300 font-semibold">
+                  {formInputs.inventory_name}
+                </span>
+                . This action cannot be undone.
+              </p>
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={closeModal}
+                className="px-4 py-2 rounded-lg text-sm font-medium text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => handleDelete(formInputs.inventory_id)}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/20 transition-colors"
+              >
+                <Trash2Icon size={13} />
+                Delete
+              </button>
+            </div>
+          </div>
         </Modal>
       )}
     </div>

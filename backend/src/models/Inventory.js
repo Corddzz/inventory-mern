@@ -3,15 +3,15 @@ import pool from "../config/connect.js";
 export const getAll = async () => {
   const sql =
     "SELECT inventory.inventory_id, inventory.inventory_name, category.cat_name, inventory.brand, inventory.qty, room.name, inventory.status, DATE_FORMAT(inventory.created_at, '%Y-%m-%d %h:%i:%s %p') AS formatted_date FROM inventory LEFT JOIN category on inventory.category_id = category.cat_id LEFT JOIN room on inventory.room_id = room.room_id ORDER BY formatted_date DESC";
-  const [result] = await pool.execute(sql);
-  return result;
+  const [rows] = await pool.execute(sql);
+  return rows;
 };
 
 export const getById = async (inventory_id) => {
   const sql =
     "SELECT inventory.inventory_id, inventory.inventory_name, category.cat_name, inventory.brand, inventory.qty, room.name, inventory.status, DATE_FORMAT(inventory.created_at, '%Y-%m-%d %h:%i:%s %p') AS formatted_date FROM inventory LEFT JOIN category on inventory.category_id = category.cat_id LEFT JOIN room on inventory.room_id = room.room_id WHERE inventory_id=?";
-  const [result] = await pool.execute(sql, [inventory_id]);
-  return result[0];
+  const [rows] = await pool.execute(sql, [inventory_id]);
+  return rows[0];
 };
 
 export const insert = async (

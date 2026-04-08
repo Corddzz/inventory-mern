@@ -1,4 +1,3 @@
-import React from "react";
 import { NavLink } from "react-router-dom";
 import {
   FileChartLine,
@@ -9,6 +8,40 @@ import {
 } from "lucide-react";
 
 const Sidebar = () => {
+  const navLinks = [
+    {
+      id: 1,
+      link: "/inventory",
+      icon: <Package size={18} className="shrink-0" />,
+      label: "Inventory",
+    },
+    {
+      id: 2,
+      link: "/computers",
+      icon: <LaptopMinimal size={18} className="shrink-0" />,
+      label: "Computers",
+    },
+    {
+      id: 3,
+      link: "/laboratories",
+      icon: <Building2 size={18} className="shrink-0" />,
+      label: "Laboratories",
+    },
+    {
+      id: 4,
+      link: "/reports",
+      icon: <FileChartLine size={18} className="shrink-0" />,
+      label: "Reports",
+    },
+  ];
+
+  const navClass = ({ isActive }) =>
+    `flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors duration-150 ${
+      isActive
+        ? "bg-cyan-500/20 text-cyan-400 font-semibold"
+        : "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"
+    }`;
+
   return (
     <aside
       className="flex flex-col bg-zinc-900 border-r border-zinc-800
@@ -34,74 +67,14 @@ const Sidebar = () => {
 
       <nav className="flex-1 px-2 py-2">
         <ul className="flex flex-col gap-1">
-          <NavLink
-            to="/inventory"
-            end
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors duration-150
-        ${
-          isActive
-            ? "bg-cyan-500/20 text-cyan-400 font-semibold"
-            : "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"
-        }`
-            }
-          >
-            <Package size={18} className="shrink-0" />
-            <span className="text-sm whitespace-nowrap overflow-hidden">
-              Inventory
-            </span>
-          </NavLink>
-          <NavLink
-            to="/computers"
-            end
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors duration-150
-        ${
-          isActive
-            ? "bg-cyan-500/20 text-cyan-400 font-semibold"
-            : "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"
-        }`
-            }
-          >
-            <LaptopMinimal size={18} className="shrink-0" />
-            <span className="text-sm whitespace-nowrap overflow-hidden">
-              Computers
-            </span>
-          </NavLink>
-          <NavLink
-            to="/laboratories"
-            end
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors duration-150
-        ${
-          isActive
-            ? "bg-cyan-500/20 text-cyan-400 font-semibold"
-            : "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"
-        }`
-            }
-          >
-            <Building2 size={18} className="shrink-0" />
-            <span className="text-sm whitespace-nowrap overflow-hidden">
-              Laboratories
-            </span>
-          </NavLink>
-          <NavLink
-            to="/reports"
-            end
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors duration-150
-        ${
-          isActive
-            ? "bg-cyan-500/20 text-cyan-400 font-semibold"
-            : "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"
-        }`
-            }
-          >
-            <FileChartLine size={18} className="shrink-0" />
-            <span className="text-sm whitespace-nowrap overflow-hidden">
-              Reports
-            </span>
-          </NavLink>
+          {navLinks.map(({ id, link, icon, label }) => (
+            <NavLink key={id} to={link} end className={navClass}>
+              {icon}
+              <span className="text-sm whitespace-nowrap overflow-hidden">
+                {label}
+              </span>
+            </NavLink>
+          ))}
         </ul>
       </nav>
     </aside>

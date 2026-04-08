@@ -22,16 +22,6 @@ export const fetchInventoryById = async (id) => {
   }
 };
 
-export const fetchRoom = async () => {
-  try {
-    const response = await axios.get(`${URL}/rooms`);
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching rooms:", error);
-    throw error;
-  }
-};
-
 export const createInventory = async (item) => {
   try {
     const { data } = await axios.post(`${URL}/inventory`, item);
@@ -61,6 +51,16 @@ export const deleteInventory = async (inventory_id) => {
     return data;
   } catch (error) {
     console.error("Error deleting item:", error);
+    throw error;
+  }
+};
+
+export const fetchRoom = async () => {
+  try {
+    const { data } = await axios.get(`${URL}/rooms`);
+    return data;
+  } catch (error) {
+    console.error("Error fetching rooms:", error);
     throw error;
   }
 };

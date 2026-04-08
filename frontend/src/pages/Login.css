@@ -1,0 +1,110 @@
+@import url("https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap");
+
+/* ─── Keyframes ──────────────────────────────────────────────────── */
+@keyframes blob-drift {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(30px, 20px) scale(1.08);
+  }
+}
+
+@keyframes blob-drift-center {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    transform: translate(calc(-50% + 40px), calc(-50% - 20px)) scale(1.1);
+  }
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes icon-in {
+  from {
+    opacity: 0;
+    transform: scale(0.6) rotate(-15deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ─── Animation utilities ────────────────────────────────────────── */
+.animate-blob-drift {
+  animation: blob-drift 12s ease-in-out infinite alternate;
+}
+.animate-blob-drift-center {
+  animation: blob-drift-center 14s ease-in-out infinite alternate;
+  animation-delay: -8s;
+}
+.animate-blob-2 {
+  animation: blob-drift 12s ease-in-out infinite alternate;
+  animation-delay: -4s;
+}
+.animate-card-in {
+  animation: card-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.animate-icon-in {
+  animation: icon-in 0.7s 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.animate-slide-up-1 {
+  animation: slide-up 0.5s 0.15s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.animate-slide-up-2 {
+  animation: slide-up 0.5s 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.animate-slide-up-3 {
+  animation: slide-up 0.5s 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.animate-spin-slow {
+  animation: spin 0.7s linear infinite;
+}
+
+/* ─── Pseudo-element: brand panel dot pattern ────────────────────── */
+.brand-panel-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+/* ─── focus-within icon colour shift ────────────────────────────── */
+.input-group:focus-within .input-group-icon {
+  color: #3b82f6;
+}
+
+/* ─── Error input override ───────────────────────────────────────── */
+.field-error .field-input {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+}
