@@ -13,3 +13,9 @@ export const insert = async (email, password) => {
   const [result] = await pool.execute(sql, [email, password]);
   return result;
 };
+
+export const remove = async (id) => {
+  const sql = "DELETE FROM users WHERE id = ?";
+  const [result] = await pool.execute(sql, [id]);
+  return result;
+};
