@@ -2,10 +2,18 @@ import pool from "../config/connect.js";
 
 export const findByEmail = async (email) => {
   const sql = "SELECT * FROM users WHERE email = ?";
-  const [result] = await pool.execute(sql, [
+  const [rows] = await pool.execute(sql, [
     email,
   ]);
-  return result[0];
+  return rows[0];
+};
+
+export const findById = async (id) => {
+  const sql = "SELECT * FROM users WHERE id = ?";
+  const [rows] = await pool.execute(sql, [
+    id,
+  ]);
+  return rows[0];
 };
 
 export const insert = async (email, password) => {
@@ -17,7 +25,7 @@ export const insert = async (email, password) => {
 };
 
 export const getAll = async () => {
-  const sql = "SELECT id, email FROM users";
+  const sql = "SELECT id, email, role FROM users";
   const [result] = await pool.execute(sql);
   return result;
 };

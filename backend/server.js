@@ -9,7 +9,7 @@ import userRoutes from './src/routes/userRoutes.js';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT;
 
 app.use(express.json());
 app.use(cookieParser());
