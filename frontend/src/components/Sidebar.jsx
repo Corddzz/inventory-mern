@@ -1,13 +1,18 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   FileChartLine,
   LaptopMinimal,
   Package,
   PcCase,
   Building2,
+  LogOut,
 } from "lucide-react";
+import useAuth from "../context/useAuth";
 
 const Sidebar = () => {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
   const navLinks = [
     {
       id: 1,
@@ -42,11 +47,14 @@ const Sidebar = () => {
         : "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"
     }`;
 
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login", { replace: true });
+  };
+
   return (
-    <aside
-      className="flex flex-col bg-zinc-900 border-r border-zinc-800
-        h-screen sticky top-0 shrink-0 w-52"
-    >
+    <aside className="flex flex-col bg-zinc-900 border-r border-zinc-800 h-screen sticky top-0 shrink-0 w-52">
+      {/* Logo */}
       <div className="flex items-center gap-2.5 px-3 py-4 border-b border-zinc-800">
         <PcCase size={20} className="text-cyan-400 shrink-0" />
         <div className="overflow-hidden">
@@ -77,6 +85,22 @@ const Sidebar = () => {
           ))}
         </ul>
       </nav>
+
+      {/* User + Logout */}
+      <div className="px-3 py-4 border-t border-zinc-800">
+        {user && (
+          <p className="text-[11px] text-zinc-500 font-mono truncate mb-2 px-1">
+            {user.email}
+          </p>
+        )}
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-zinc-400 hover:bg-red-500/10 hover:text-red-400 transition-colors duration-150"
+        >
+          <LogOut size={18} className="shrink-0" />
+          <span className="text-sm">Sign out</span>
+        </button>
+      </div>
     </aside>
   );
 };
