@@ -1,5 +1,10 @@
 import axios from "axios";
 
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
+  withCredentials: true,
+});
+
 const URL = import.meta.env.VITE_API_URL;
 
 export const fetchInventory = async () => {
@@ -63,4 +68,24 @@ export const fetchRoom = async () => {
     console.error("Error fetching rooms:", error);
     throw error;
   }
+};
+
+export const loginUser = async ({ email, password }) => {
+  const { data } = await api.post(`/login`, { email, password });
+  return data;
+};
+
+export const logoutUser = async () => {
+  const { data } = await api.post(`/logout`);
+  return data;
+};
+
+export const getMe = async () => {
+  const { data } = await api.get(`/me`);
+  return data;
+};
+
+export const signUpUser = async ({ email, password }) => {
+  const { data } = await api.post("/signup", { email, password });
+  return data;
 };
