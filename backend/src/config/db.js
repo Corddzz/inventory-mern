@@ -5,13 +5,18 @@ const pool = mysql.createPool({
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  port: process.env.DB_PORT,
-  waitForConnections: true,
-  connectionLimit: 10,
 });
-pool
-  .getConnection()
-  .then(() => console.log("✅ MySQL connected successfully"))
-  .catch((err) => console.log("❌ MySQL connection failed:", err.message));
+
+async function testConnection() {
+  try {
+    const connection = await pool.getConnection();
+    console.log("✅ Connected to MySQL!");
+    connection.release();
+  } catch (err) {
+    console.error("❌ Connection failed:", err.message);
+  }
+}
+
+testConnection();
 
 export default pool;
