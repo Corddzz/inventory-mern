@@ -9,7 +9,7 @@ services:
       - 5173:5173
 
     environment:
-      VITE_API_URL: http://localhost:9000
+      VITE_API_URL: http://localhost:8000
     develop:
       watch:
         - path: ./frontend/package.json
@@ -26,17 +26,17 @@ services:
         condition: service_healthy
     build: ./backend
     ports:
-      - 9000:8000
+      - 8000:8000
     environment:
-      PORT: "8000"
-      CORS_ORIGIN: ${CORS_ORIGIN}
-      DB_HOST: ${DB_HOST}
-      DB_USER: ${DB_USER}
+      PORT: 8000
+      DB_HOST: db
+      DB_USER: root
       DB_PASSWORD: ${DB_PASSWORD}
-      DB_NAME: ${DB_NAME}
-      DB_PORT: ${DB_PORT}
-      JWT_TOKEN_SECRET: ${JWT_TOKEN_SECRET}
-      REFRESH_TOKEN: ${REFRESH_TOKEN}
+      DB_NAME: lab_inventory
+      DB_PORT: 3306
+      # CORS_ORIGIN: ${CORS_ORIGIN}
+      # JWT_TOKEN_SECRET: ${JWT_TOKEN_SECRET}
+      # REFRESH_TOKEN: ${REFRESH_TOKEN}
     develop:
       watch:
         - path: ./backend/package.json
@@ -49,20 +49,28 @@ services:
 
   db:
     image: mysql:8.0
-    ports:
-      - 3309:3306
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_USER: ${DB_USER}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_DATABASE: ${DB_NAME}
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 5s
-      timeout: 10s
-      retries: 5
+      MYSQL_DATABASE: lab_inventory
+    ports:
+      - "3309:3306"
     volumes:
-      - inventory:/var/lib/mysql
+      - inventory_data:/var/lib/mysql
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-uroot",
+          "-p${MYSQL_ROOT_PASSWORD}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 
 volumes:
-  inventory:
+  inventory_data:
