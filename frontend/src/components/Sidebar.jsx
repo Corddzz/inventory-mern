@@ -7,10 +7,8 @@ import {
   Building2,
   LogOut,
 } from "lucide-react";
-import useAuth from "../context/useAuth";
 
 const Sidebar = () => {
-  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const navLinks = [
@@ -88,11 +86,6 @@ const Sidebar = () => {
 
       {/* User + Logout */}
       <div className="px-3 py-4 border-t border-zinc-800">
-        {user && (
-          <p className="text-[11px] text-zinc-500 font-mono truncate mb-2 px-1">
-            {user.email}
-          </p>
-        )}
         <button
           onClick={handleLogout}
           className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-zinc-400 hover:bg-red-500/10 hover:text-red-400 transition-colors duration-150"

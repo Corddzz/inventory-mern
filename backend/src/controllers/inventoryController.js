@@ -30,32 +30,25 @@ export const fetchById = async (req, res) => {
 };
 
 export const createInventory = async (req, res) => {
+  const { inventory_name, cat_name, brand_name, qty, lab_name, status } =
+    req.body;
+
   try {
-    const { inventory_name, cat_name, brand, qty, name, status } = req.body;
-    console.log("req.body:", req.body);
-    console.log("cat_name:", cat_name);
     if (
       !inventory_name ||
       !cat_name ||
-      !brand ||
+      !brand_name ||
       qty == null ||
-      !name ||
+      !lab_name ||
       !status
     )
       return res.status(400).json({ error: "Missing required fields! ⚠️" });
 
-    const newInventoryItem = await insert(
-      inventory_name,
-      cat_name,
-      brand,
-      qty,
-      name,
-      status,
-    );
+    await insert(inventory_name, cat_name, brand_name, qty, lab_name, status);
 
     res.status(201).json({
       message: "Item inserted successfully ✅",
-      item: newInventoryItem,
+      data: { inventory_name, cat_name, brand_name, qty, lab_name, status },
     });
   } catch (error) {
     console.error(error);
@@ -66,7 +59,8 @@ export const createInventory = async (req, res) => {
 export const updateInventory = async (req, res) => {
   try {
     const { inventory_id } = req.params;
-    const { inventory_name, cat_name, brand, qty, name, status } = req.body;
+    const { inventory_name, cat_name, brand_name, qty, lab_name, status } =
+      req.body;
 
     console.log("params:", req.params);
     console.log("body:", req.body);
@@ -74,9 +68,9 @@ export const updateInventory = async (req, res) => {
       inventory_id,
       inventory_name,
       cat_name,
-      brand,
+      brand_name,
       qty,
-      name,
+      lab_name,
       status,
     });
 
@@ -84,9 +78,9 @@ export const updateInventory = async (req, res) => {
       inventory_id,
       inventory_name,
       cat_name,
-      brand,
+      brand_name,
       qty,
-      name,
+      lab_name,
       status,
     );
 
@@ -113,7 +107,10 @@ export const deleteInventory = async (req, res) => {
     if (removedInventory.affectedRow === 0)
       return res.status(404).json({ message: "Deleted item not found! ⚠️" });
 
-    res.status(200).json({ message: "Inventory delete successfully! ✅" });
+    res.status(200).json({
+      message: "Inventory delete successfully! ✅",
+      inventory_id: inventory_id,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: error.message });

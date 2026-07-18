@@ -7,6 +7,7 @@ const api = axios.create({
 
 const URL = import.meta.env.VITE_API_URL;
 
+// Inventory API functions
 export const fetchInventory = async () => {
   try {
     const response = await axios.get(`${URL}/inventory`);
@@ -60,32 +61,13 @@ export const deleteInventory = async (inventory_id) => {
   }
 };
 
-export const fetchRoom = async () => {
+// Laboratory API functions
+export const fetchLaboratories = async () => {
   try {
-    const { data } = await axios.get(`${URL}/rooms`);
-    return data;
+    const response = await axios.get(`${URL}/laboratory`);
+    return response.data;
   } catch (error) {
-    console.error("Error fetching rooms:", error);
+    console.error("Error fetching laboratory:", error);
     throw error;
   }
-};
-
-export const loginUser = async ({ email, password }) => {
-  const { data } = await api.post(`/login`, { email, password });
-  return data;
-};
-
-export const logoutUser = async () => {
-  const { data } = await api.post(`/logout`);
-  return data;
-};
-
-export const getMe = async () => {
-  const { data } = await api.get(`/me`);
-  return data;
-};
-
-export const signUpUser = async ({ email, password }) => {
-  const { data } = await api.post("/signup", { email, password });
-  return data;
 };

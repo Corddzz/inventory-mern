@@ -34,7 +34,7 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: lab_inventory
       DB_PORT: 3306
-      # CORS_ORIGIN: ${CORS_ORIGIN}
+      CORS_ORIGIN: ${CORS_ORIGIN}
       # JWT_TOKEN_SECRET: ${JWT_TOKEN_SECRET}
       # REFRESH_TOKEN: ${REFRESH_TOKEN}
     develop:

@@ -218,12 +218,12 @@ const Inventory = () => {
                 ) : (
                   inventoryItems.map((item, index) => (
                     <tr
-                      key={index}
+                      key={item.id}
                       className={`border-b border-zinc-800/60 transition-colors hover:bg-zinc-800/40
                         ${index % 2 !== 0 ? "bg-zinc-800/20" : ""}`}
                     >
                       <td className="px-5 py-4 text-xs text-zinc-500 font-mono">
-                        {item.inventory_id}
+                        {item.id}
                       </td>
                       <td className="px-5 py-4">
                         <p className="text-sm font-bold text-zinc-100">
@@ -232,10 +232,10 @@ const Inventory = () => {
                       </td>
 
                       <td className="px-5 py-4">
-                        <Badge category={item.cat_name} />
+                        <Badge category={item.category_name} />
                       </td>
                       <td className="px-5 py-4 text-sm text-zinc-400">
-                        {item.brand}
+                        {item.brand_name}
                       </td>
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-1.5">
@@ -253,7 +253,7 @@ const Inventory = () => {
                         </div>
                       </td>
                       <td className="px-5 py-4 text-sm text-zinc-400">
-                        {item.name}
+                        {item.laboratory_name}
                       </td>
 
                       <td className="px-5 py-4 text-sm text-zinc-400">

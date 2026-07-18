@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import Button from "../components/Button";
 import { PlusIcon, Monitor } from "lucide-react";
-import { fetchRoom } from "../api/axios";
 
 // ─── Mock Data ─────────────────────────────────────────────────────────────────
 const labs = [
