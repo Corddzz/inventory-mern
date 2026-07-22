@@ -71,3 +71,13 @@ export const fetchLaboratories = async () => {
     throw error;
   }
 };
+
+export const createLaboratory = async (lab) => {
+  try {
+    const { data } = await axios.post(`${URL}/laboratory`, lab);
+    return data;
+  } catch (error) {
+    console.error("Error creating item:", error);
+    throw error;
+  }
+};
