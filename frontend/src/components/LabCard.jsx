@@ -4,7 +4,10 @@ import {
   Building,
   SquareArrowOutUpRight,
   Layers3,
+  EllipsisVertical,
 } from "lucide-react";
+import Button from "./Button";
+import KebabMenu from "./KebabMenu";
 
 const LabCard = ({
   name,
@@ -13,23 +16,19 @@ const LabCard = ({
   icon: Icon = Monitor,
   onClick,
   className = "",
+  onEdit,
+  onDelete,
 }) => {
   return (
-    <button
-      type="button"
+    <div
       onClick={onClick}
       className={`
         group w-full rounded-2xl
         border border-zinc-800/80
         bg-zinc-900/50
         px-5 py-4
-        backdrop-blur-sm
         transition-all duration-300
-        hover:-translate-y-0.5
-        hover:border-cyan-500/20
-        hover:bg-zinc-900/70
-        hover:shadow-xl hover:shadow-cyan-950/20
-        cursor-pointer
+        
         ${className}
       `}
     >
@@ -43,9 +42,6 @@ const LabCard = ({
               text-cyan-300
               ring-1 ring-cyan-500/15
               transition-all duration-300
-              group-hover:scale-105
-              group-hover:bg-cyan-500/20
-              group-hover:ring-cyan-400/30
             "
           >
             <Icon size={22} />
@@ -56,13 +52,13 @@ const LabCard = ({
               {name}
             </h3>
 
-            <div className="mt-1 flex items-center gap-2 text-sm text-zinc-500 transition-colors group-hover:text-zinc-300">
+            <div className="mt-1 flex items-center gap-2 text-sm text-zinc-500 transition-colors">
               <div className="flex items-center gap-1">
                 <Building size={15} />
                 <span>{building}</span>
               </div>
 
-              <div className="h-1 w-1 rounded-full bg-zinc-700 group-hover:bg-zinc-500" />
+              <div className="h-1 w-1 rounded-full bg-zinc-700 " />
 
               <div className="flex items-center gap-1">
                 <Layers3 size={15} />
@@ -71,13 +67,16 @@ const LabCard = ({
             </div>
           </div>
         </div>
-
-        <SquareArrowOutUpRight
-          size={18}
-          className="text-zinc-500 transition-all duration-300 group-hover:translate-x-1 group-hover:text-cyan-300"
-        />
+        <div className="flex flex-row gap-3">
+          <Button
+            icon={SquareArrowOutUpRight}
+            variant="secondary"
+            className="p-3"
+          />
+          <KebabMenu onEdit={onEdit} />
+        </div>
       </div>
-    </button>
+    </div>
   );
 };
 

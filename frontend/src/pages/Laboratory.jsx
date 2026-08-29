@@ -23,6 +23,11 @@ const Laboratory = () => {
   };
   const closeModal = () => {
     setIsModalOpen(false);
+    setFormInputs({
+      lab_name: "",
+      building: "",
+      floor: "",
+    });
   };
 
   const handleChange = (e) => {
@@ -55,6 +60,17 @@ const Laboratory = () => {
     }
   };
 
+  const handleEditClick = async (inventory_id) => {
+    try {
+      const data = await fetchInventoryById(inventory_id);
+      setFormInputs(data);
+      setIsEditing(true);
+      openModal();
+    } catch (error) {
+      console.error("Error fetching item:", error);
+    }
+  };
+
   useEffect(() => {
     const loadLaboratory = async () => {
       try {
@@ -75,7 +91,12 @@ const Laboratory = () => {
           <h1 className="text-base font-bold text-zinc-100">Laboratories</h1>
           <p className="text-xs text-zinc-500 mt-0.5">Laboratory Rooms</p>
         </div>
-        <Button title="New Lab" icon={Plus} onClick={openModal} />
+        <Button
+          title="New Lab"
+          icon={Plus}
+          onClick={openModal}
+          className="px-3 py-2"
+        />
       </div>
 
       <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
@@ -168,9 +189,14 @@ const Laboratory = () => {
                   icon={X}
                   onClick={closeModal}
                   variant={"secondary"}
-                  className={"outline-1 hover:bg-zinc-600"}
+                  className="px-3 py-2"
                 />
-                <Button title="Save" icon={Save} type="submit" />
+                <Button
+                  title="Save"
+                  icon={Save}
+                  type="submit"
+                  className="px-3 py-2"
+                />
               </div>
             </div>
           </form>
