@@ -7,7 +7,7 @@ import inventoryRoutes from "./src/routes/inventoryRoutes.js";
 import authRoutes from "./src/routes/authRoutes.js";
 
 const app = express();
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT;
 
 app.use(express.json());
 app.use(cookieParser());
