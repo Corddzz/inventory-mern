@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   User,
   Lock,
@@ -11,19 +12,23 @@ import {
   PcCase,
 } from "lucide-react";
 import "./Login.css";
+import { loginUser, getMe } from "../api/axios.js";
+import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
-  const [form, setForm] = useState({ username: "", password: "" });
+  const navigate = useNavigate();
+  const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const { setUser } = useAuth();
 
   const validate = () => {
     const newErrors = {};
-    if (!form.username.trim()) newErrors.username = "Username is required";
+    if (!form.email.trim()) newErrors.email = "Email is required";
     if (!form.password) newErrors.password = "Password is required";
-    else if (form.password.length < 6)
-      newErrors.password = "Password must be at least 6 characters";
+    else if (form.password.length < 8)
+      newErrors.password = "Password must be at least 8 characters";
     return newErrors;
   };
 
@@ -41,20 +46,32 @@ const Login = () => {
       return;
     }
     setIsLoading(true);
-    // TODO: replace with actual auth API call
-    await new Promise((r) => setTimeout(r, 1500));
-    setIsLoading(false);
+    try {
+      await loginUser(form.email, form.password);
+      const me = await getMe();
+      setUser(me);
+      navigate("/");
+    } catch (err) {
+      setErrors({ password: "Invalid credentials" });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
+    // Root
     <div className="min-h-screen flex items-center justify-center bg-[#0d0f14] font-['DM_Sans',sans-serif] relative overflow-hidden p-6">
-      <div className="absolute w-130 h-130 rounded-full bg-blue-500 opacity-[0.18] blur-[80px] pointer-events-none -top-40 -left-28 animate-blob-drift" />
-      <div className="absolute w-100 h-100 rounded-full bg-violet-500 opacity-[0.18] blur-[80px] pointer-events-none -bottom-24 -right-20 animate-blob-2" />
-      <div className="absolute w-70 h-70 rounded-full bg-cyan-400 opacity-[0.18] blur-[80px] pointer-events-none top-1/2 left-1/2 animate-blob-drift-center" />
+      {/* ── Blobs ── */}
+      <div className="absolute w-[520px] h-[520px] rounded-full bg-blue-500 opacity-[0.18] blur-[80px] pointer-events-none -top-40 -left-28 animate-blob-drift" />
+      <div className="absolute w-[400px] h-[400px] rounded-full bg-violet-500 opacity-[0.18] blur-[80px] pointer-events-none -bottom-24 -right-20 animate-blob-2" />
+      <div className="absolute w-[280px] h-[280px] rounded-full bg-cyan-400 opacity-[0.18] blur-[80px] pointer-events-none top-1/2 left-1/2 animate-blob-drift-center" />
 
-      <div className="relative z-10 flex w-full max-w-215 rounded-3xl overflow-hidden shadow-[0_32px_80px_rgba(0,0,0,0.55),0_0_0_1px_rgba(255,255,255,0.06)] animate-card-in">
-        <div className="brand-panel-bg hidden md:flex w-85 shrink-0 bg-linear-to-br from-blue-800 via-indigo-600 to-violet-700 px-10 py-12 flex-col relative overflow-hidden">
-          <div className="w-13 h-13 mb-5 animate-icon-in">
+      {/* ── Card ── */}
+      <div className="relative z-10 flex w-full max-w-[860px] rounded-3xl overflow-hidden shadow-[0_32px_80px_rgba(0,0,0,0.55),0_0_0_1px_rgba(255,255,255,0.06)] animate-card-in">
+        {/* ── Brand panel ── */}
+        <div className="brand-panel-bg hidden md:flex w-[340px] shrink-0 bg-gradient-to-br from-blue-800 via-indigo-600 to-violet-700 px-10 py-12 flex-col relative overflow-hidden">
+          {/* Logo */}
+          <div className="w-[52px] h-[52px] mb-5 animate-icon-in">
             <PcCase size={48} color="white" />
           </div>
 
@@ -80,15 +97,16 @@ const Login = () => {
             ].map(({ icon, label }) => (
               <span
                 key={label}
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white/10 border border-white/15 rounded-full text-[0.8rem] text-white/85 font-medium backdrop-blur-sm w-fit"
-              >
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white/10 border border-white/15 rounded-full text-[0.8rem] text-white/85 font-medium backdrop-blur-sm w-fit">
                 {icon} {label}
               </span>
             ))}
           </div>
         </div>
 
+        {/* ── Form panel ── */}
         <div className="flex-1 bg-[#111318] px-11 py-12 flex flex-col justify-center">
+          {/* Header */}
           <div className="mb-9 animate-slide-up-1">
             <h2 className="font-['Syne',sans-serif] text-[1.7rem] font-bold text-slate-100 tracking-tight mb-1.5">
               Welcome back
@@ -98,56 +116,53 @@ const Login = () => {
             </p>
           </div>
 
+          {/* Form */}
           <form
             onSubmit={handleSubmit}
             noValidate
-            className="flex flex-col gap-5 animate-slide-up-2"
-          >
+            className="flex flex-col gap-5 animate-slide-up-2">
+            {/* Email */}
             <div
-              className={`flex flex-col gap-1.5 ${errors.username ? "field-error" : ""}`}
-            >
+              className={`flex flex-col gap-1.5 ${errors.email ? "field-error" : ""}`}>
               <label
-                htmlFor="username"
-                className="text-[0.8rem] font-semibold text-slate-400 tracking-wider uppercase"
-              >
-                Username
+                htmlFor="email"
+                className="text-[0.8rem] font-semibold text-slate-400 tracking-wider uppercase">
+                email
               </label>
               <div className="input-group relative flex items-center">
                 <span className="input-group-icon absolute left-3.5 text-slate-600 flex pointer-events-none transition-colors duration-200">
                   <User size={16} />
                 </span>
                 <input
-                  id="username"
-                  name="username"
+                  id="email"
+                  name="email"
                   type="text"
-                  autoComplete="username"
-                  placeholder="e.g. john_doe"
-                  value={form.username}
+                  autoComplete="email"
+                  placeholder="example@email.com"
+                  value={form.email}
                   onChange={handleChange}
                   className="field-input w-full pl-10 pr-4 py-3 bg-[#1a1d26] border border-[#252836] rounded-[10px] text-slate-200 text-[0.9rem] outline-none transition-all duration-200 placeholder:text-gray-700 focus:border-blue-500 focus:bg-[#1e2130] focus:shadow-[0_0_0_3px_rgba(59,130,246,0.12)]"
                 />
               </div>
-              {errors.username && (
+              {errors.email && (
                 <span className="text-[0.76rem] text-red-400 flex items-center gap-1">
-                  {errors.username}
+                  {errors.email}
                 </span>
               )}
             </div>
 
+            {/* Password */}
             <div
-              className={`flex flex-col gap-1.5 ${errors.password ? "field-error" : ""}`}
-            >
+              className={`flex flex-col gap-1.5 ${errors.password ? "field-error" : ""}`}>
               <div className="flex items-center justify-between">
                 <label
                   htmlFor="password"
-                  className="text-[0.8rem] font-semibold text-slate-400 tracking-wider uppercase"
-                >
+                  className="text-[0.8rem] font-semibold text-slate-400 tracking-wider uppercase">
                   Password
                 </label>
                 <a
                   href="#"
-                  className="text-[0.78rem] text-blue-500 font-medium hover:text-blue-400 transition-colors duration-200 no-underline"
-                >
+                  className="text-[0.78rem] text-blue-500 font-medium hover:text-blue-400 transition-colors duration-200 no-underline">
                   Forgot password?
                 </a>
               </div>
@@ -169,8 +184,7 @@ const Login = () => {
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
                   aria-label="Toggle password visibility"
-                  className="absolute right-3.5 text-slate-600 hover:text-slate-400 flex p-0 bg-transparent border-none cursor-pointer transition-colors duration-200"
-                >
+                  className="absolute right-3.5 text-slate-600 hover:text-slate-400 flex p-0 bg-transparent border-none cursor-pointer transition-colors duration-200">
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
@@ -181,23 +195,13 @@ const Login = () => {
               )}
             </div>
 
-            <label className="flex items-center gap-2.5 cursor-pointer">
-              <input
-                type="checkbox"
-                className="w-4 h-4 accent-blue-500 cursor-pointer"
-              />
-              <span className="text-[0.85rem] text-slate-500">
-                Remember me for 30 days
-              </span>
-            </label>
-
+            {/* Submit */}
             <button
               type="submit"
               disabled={isLoading}
-              className="mt-1 flex items-center justify-center gap-2 w-full py-3.5 px-6 bg-linear-to-br from-blue-600 to-indigo-600 rounded-[10px] text-white font-['Syne',sans-serif] text-[0.95rem] font-semibold tracking-wide cursor-pointer border-none shadow-[0_4px_20px_rgba(59,130,246,0.3)] transition-all duration-200 hover:opacity-90 hover:-translate-y-px hover:shadow-[0_8px_28px_rgba(59,130,246,0.4)] active:translate-y-0 disabled:opacity-60 disabled:cursor-not-allowed"
-            >
+              className="mt-1 flex items-center justify-center gap-2 w-full py-3.5 px-6 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-[10px] text-white font-['Syne',sans-serif] text-[0.95rem] font-semibold tracking-wide cursor-pointer border-none shadow-[0_4px_20px_rgba(59,130,246,0.3)] transition-all duration-200 hover:opacity-90 hover:-translate-y-px hover:shadow-[0_8px_28px_rgba(59,130,246,0.4)] active:translate-y-0 disabled:opacity-60 disabled:cursor-not-allowed">
               {isLoading ? (
-                <span className="w-4.5 h-4.5 border-2 border-white/30 border-t-white rounded-full animate-spin-slow" />
+                <span className="w-[18px] h-[18px] border-2 border-white/30 border-t-white rounded-full animate-spin-slow" />
               ) : (
                 <>
                   Sign In <ArrowRight size={16} />
@@ -206,12 +210,12 @@ const Login = () => {
             </button>
           </form>
 
+          {/* Footer */}
           <p className="mt-7 text-[0.82rem] text-slate-600 text-center animate-slide-up-3">
             Having trouble signing in?{" "}
             <a
               href="#"
-              className="text-blue-500 font-medium hover:text-blue-400 transition-colors duration-200 no-underline"
-            >
+              className="text-blue-500 font-medium hover:text-blue-400 transition-colors duration-200 no-underline">
               Contact IT Support
             </a>
           </p>
