@@ -36,6 +36,7 @@ services:
       DB_PORT: ${DB_PORT}
       JWT_TOKEN_SECRET: ${JWT_TOKEN_SECRET}
       REFRESH_TOKEN: ${REFRESH_TOKEN}
+      CORS_ORIGIN: ${CORS_ORIGIN}
     develop:
       watch:
         - path: ./backend/package.json

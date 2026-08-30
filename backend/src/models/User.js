@@ -18,10 +18,10 @@ export const findByEmail = async (email) => {
   return rows[0];
 };
 
-export const insert = async (email, password) => {
+export const insert = async (email, password, role) => {
   const [result] = await pool.execute(
-    "INSERT INTO users (email, password) VALUES (?, ?)",
-    [email, password],
+    "INSERT INTO users (email, password, role) VALUES (?, ?, ?)",
+    [email, password, role],
   );
   return result;
 };
