@@ -1,10 +1,11 @@
 import dotenv from "dotenv";
-dotenv.config();
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import inventoryRoutes from "./src/routes/inventoryRoutes.js";
 import authRoutes from "./src/routes/authRoutes.js";
+
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT;

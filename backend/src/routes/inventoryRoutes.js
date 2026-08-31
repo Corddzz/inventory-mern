@@ -7,12 +7,14 @@ import {
   deleteInventory,
 } from "../controllers/inventoryController.js";
 
+import { verifyToken } from "../middlewares/authMiddleware.js";
+
 const router = Router();
 
-router.get("/inventory", fetchInventory);
-router.get("/inventory/:inventory_id", fetchById);
-router.post("/inventory/", createInventory);
-router.put("/inventory/:inventory_id", updateInventory);
-router.delete("/inventory/:inventory_id", deleteInventory);
+router.get("/inventory", verifyToken, fetchInventory);
+router.get("/inventory/:inventory_id", verifyToken, fetchById);
+router.post("/inventory/", verifyToken, createInventory);
+router.put("/inventory/:inventory_id", verifyToken, updateInventory);
+router.delete("/inventory/:inventory_id", verifyToken, deleteInventory);
 
 export default router;

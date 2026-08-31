@@ -47,7 +47,8 @@ export const login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ error: "Invalid password." });
 
-    const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, process.env.JWT_TOKEN_SECRET, { expiresIn: "1d" });
+    const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, process.env.JWT_TOKEN_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
+    console.log({ email, token: token }); //Give token if success login
 
     res.cookie("token", token, {
       httpOnly: true,
@@ -55,14 +56,13 @@ export const login = async (req, res) => {
       maxAge: 24 * 60 * 60 * 1000, // 1 day, matches the JWT's expiresIn
     });
 
-    return res.status(200).json({ message: "Login Successful" });
+    return res.status(200).json({ message: "Login Successful", user: email, token: token });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
 
-// GET /me — used by AuthContext to restore the session on page load
 export const getMe = async (req, res) => {
   try {
     const user = await findById(req.user.id);
