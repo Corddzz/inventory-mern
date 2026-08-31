@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import {
   User,
   Lock,
@@ -51,7 +51,7 @@ const Login = () => {
       const me = await getMe();
       setUser(me);
       navigate("/");
-    } catch (err) {
+    } catch {
       setErrors({ password: "Invalid credentials" });
     } finally {
       setIsLoading(false);
@@ -211,7 +211,15 @@ const Login = () => {
           </form>
 
           {/* Footer */}
-          <p className="mt-7 text-[0.82rem] text-slate-600 text-center animate-slide-up-3">
+          <p className="mt-4 text-[0.82rem] text-slate-600 text-center animate-slide-up-3">
+            Don&apos;t have an account?{" "}
+            <Link
+              to="/signup"
+              className="text-blue-500 font-medium hover:text-blue-400 transition-colors duration-200 no-underline">
+              Sign up
+            </Link>
+          </p>
+          <p className="mt-2 text-[0.82rem] text-slate-600 text-center animate-slide-up-3">
             Having trouble signing in?{" "}
             <a
               href="#"

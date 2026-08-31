@@ -9,13 +9,21 @@ import Computer from "./pages/Computer";
 import Laboratory from "./pages/Laboratory";
 import LaboratoryClaude from "./pages/LaboratoryClaude";
 import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import ProtectedRoute from "./components/ProtectedRoutes";
+import { AuthProvider } from "./context/AuthContext";
 
 const router = createBrowserRouter([
   { path: "/login", Component: Login },
+  { path: "/signup", Component: Signup },
 
   {
     path: "/",
-    Component: App,
+    element: (
+      <ProtectedRoute>
+        <App />
+      </ProtectedRoute>
+    ),
     children: [
       { index: true, Component: Home },
       { path: "inventory", Component: Inventory },
@@ -28,5 +36,7 @@ const router = createBrowserRouter([
 ]);
 
 createRoot(document.getElementById("root")).render(
-  <RouterProvider router={router} />,
+  <AuthProvider>
+    <RouterProvider router={router} />
+  </AuthProvider>,
 );

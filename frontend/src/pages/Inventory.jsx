@@ -197,8 +197,7 @@ const Inventory = () => {
                   ].map((header) => (
                     <th
                       key={header}
-                      className="px-5 py-3 text-left text-[10px] font-semibold tracking-widest uppercase text-zinc-500"
-                    >
+                      className="px-5 py-3 text-left text-[10px] font-semibold tracking-widest uppercase text-zinc-500">
                       {header}
                     </th>
                   ))}
@@ -210,8 +209,7 @@ const Inventory = () => {
                   <tr>
                     <td
                       colSpan={9}
-                      className="px-5 py-10 text-center text-sm text-zinc-600"
-                    >
+                      className="px-5 py-10 text-center text-sm text-zinc-600">
                       No items found.
                     </td>
                   </tr>
@@ -220,8 +218,7 @@ const Inventory = () => {
                     <tr
                       key={index}
                       className={`border-b border-zinc-800/60 transition-colors hover:bg-zinc-800/40
-                        ${index % 2 !== 0 ? "bg-zinc-800/20" : ""}`}
-                    >
+                        ${index % 2 !== 0 ? "bg-zinc-800/20" : ""}`}>
                       <td className="px-5 py-4 text-xs text-zinc-500 font-mono">
                         {item.inventory_id}
                       </td>
@@ -240,8 +237,7 @@ const Inventory = () => {
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-1.5">
                           <span
-                            className={`text-sm font-bold ${item.qty <= LOW_STOCK_THRESHOLD ? "text-amber-400" : "text-zinc-100"}`}
-                          >
+                            className={`text-sm font-bold ${item.qty <= LOW_STOCK_THRESHOLD ? "text-amber-400" : "text-zinc-100"}`}>
                             {item.qty}
                           </span>
                           {item.qty <= LOW_STOCK_THRESHOLD && (
@@ -274,14 +270,12 @@ const Inventory = () => {
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => handleEditClick(item.inventory_id)}
-                            className="p-1.5 rounded-lg bg-zinc-800 text-zinc-400 hover:bg-sky-500/10 hover:text-sky-400 transition-colors"
-                          >
+                            className="p-1.5 rounded-lg bg-zinc-800 text-zinc-400 hover:bg-sky-500/10 hover:text-sky-400 transition-colors">
                             <PencilIcon size={14} />
                           </button>
                           <button
                             onClick={() => handleDeleteClick(item)}
-                            className="p-1.5 rounded-lg bg-zinc-800 text-zinc-400 hover:bg-red-500/10 hover:text-red-400 transition-colors"
-                          >
+                            className="p-1.5 rounded-lg bg-zinc-800 text-zinc-400 hover:bg-red-500/10 hover:text-red-400 transition-colors">
                             <Trash2Icon size={14} />
                           </button>
                         </div>
@@ -311,8 +305,7 @@ const Inventory = () => {
               <button
                 className="text-zinc-500 hover:text-zinc-100 text-lg leading-none transition-colors"
                 type="button"
-                onClick={closeModal}
-              >
+                onClick={closeModal}>
                 ✕
               </button>
             </div>
@@ -342,8 +335,7 @@ const Inventory = () => {
                     className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-zinc-100 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 transition-all cursor-pointer"
                     required
                     value={formInputs.cat_name}
-                    onChange={handleChange}
-                  >
+                    onChange={handleChange}>
                     <option value="" disabled>
                       Select Category
                     </option>
@@ -391,8 +383,7 @@ const Inventory = () => {
                     className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-zinc-100 text-sm outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 transition-all cursor-pointer"
                     required
                     value={formInputs.unit}
-                    onChange={handleChange}
-                  >
+                    onChange={handleChange}>
                     <option value="" disabled>
                       Select Unit
                     </option>
@@ -412,8 +403,7 @@ const Inventory = () => {
                       className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-zinc-100 text-sm outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 transition-all cursor-pointer"
                       required
                       value={formInputs.name}
-                      onChange={handleChange}
-                    >
+                      onChange={handleChange}>
                       <option value="" disabled>
                         Select Room
                       </option>
@@ -430,8 +420,7 @@ const Inventory = () => {
                     className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-zinc-100 text-sm outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 transition-all cursor-pointer"
                     required
                     value={formInputs.status}
-                    onChange={handleChange}
-                  >
+                    onChange={handleChange}>
                     <option value="" disabled>
                       Select Status
                     </option>
@@ -466,14 +455,12 @@ const Inventory = () => {
               <button
                 type="button"
                 onClick={closeModal}
-                className="px-4 py-1.5 rounded-lg text-sm font-medium text-zinc-500 border border-zinc-800 hover:bg-zinc-800 hover:text-zinc-100 transition-colors"
-              >
+                className="px-4 py-1.5 rounded-lg text-sm font-medium text-zinc-500 border border-zinc-800 hover:bg-zinc-800 hover:text-zinc-100 transition-colors">
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 rounded-lg text-sm font-semibold bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 transition-colors"
-              >
+                className="px-4 py-2 rounded-lg text-sm font-semibold bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 transition-colors">
                 {isEditing ? "💾 Update Item" : "💾 Save Item"}
               </button>
             </div>
@@ -640,8 +627,7 @@ const Inventory = () => {
               <button
                 type="button"
                 onClick={closeModal}
-                className="text-zinc-600 hover:text-zinc-300 transition-colors text-lg leading-none"
-              >
+                className="text-zinc-600 hover:text-zinc-300 transition-colors text-lg leading-none">
                 ✕
               </button>
             </div>
@@ -663,15 +649,13 @@ const Inventory = () => {
               <button
                 type="button"
                 onClick={closeModal}
-                className="px-4 py-2 rounded-lg text-sm font-medium text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors"
-              >
+                className="px-4 py-2 rounded-lg text-sm font-medium text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors">
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={() => handleDelete(formInputs.inventory_id)}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/20 transition-colors"
-              >
+                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/20 transition-colors">
                 <Trash2Icon size={13} />
                 Delete
               </button>

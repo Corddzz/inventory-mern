@@ -2,6 +2,51 @@ import axios from "axios";
 
 const URL = import.meta.env.VITE_API_URL;
 
+// Backend sets the JWT as an httpOnly cookie, so every request needs to
+// carry credentials for the browser to send/receive it (frontend and
+// backend run on different ports, i.e. different origins in dev).
+axios.defaults.withCredentials = true;
+
+export const signupUser = async (email, password, role = "user") => {
+  try {
+    const { data } = await axios.post(`${URL}/signup`, { email, password, role });
+    return data;
+  } catch (error) {
+    console.error("Error signing up:", error);
+    throw error;
+  }
+};
+
+export const loginUser = async (email, password) => {
+  try {
+    const { data } = await axios.post(`${URL}/login`, { email, password });
+    return data;
+  } catch (error) {
+    console.error("Error logging in:", error);
+    throw error;
+  }
+};
+
+export const getMe = async () => {
+  try {
+    const { data } = await axios.get(`${URL}/me`);
+    return data;
+  } catch (error) {
+    console.error("Error fetching current user:", error);
+    throw error;
+  }
+};
+
+export const logoutUser = async () => {
+  try {
+    const { data } = await axios.post(`${URL}/logout`);
+    return data;
+  } catch (error) {
+    console.error("Error logging out:", error);
+    throw error;
+  }
+};
+
 export const fetchInventory = async () => {
   try {
     const response = await axios.get(`${URL}/inventory`);

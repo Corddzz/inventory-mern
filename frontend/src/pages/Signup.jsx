@@ -1,0 +1,237 @@
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import {
+  User,
+  Lock,
+  Eye,
+  EyeOff,
+  ArrowRight,
+  Package,
+  Monitor,
+  Building2,
+  PcCase,
+} from "lucide-react";
+import { signupUser } from "../api/axios.js";
+import "./Login.css";
+
+const Signup = () => {
+  const navigate = useNavigate();
+  const [form, setForm] = useState({ email: "", password: "", confirm: "" });
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  const validate = () => {
+    const newErrors = {};
+    if (!form.email.trim()) newErrors.email = "Email is required";
+    if (!form.password) newErrors.password = "Password is required";
+    else if (form.password.length < 8)
+      newErrors.password = "Password must be at least 8 characters";
+    if (form.confirm !== form.password)
+      newErrors.confirm = "Passwords do not match";
+    return newErrors;
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+    setIsLoading(true);
+    try {
+      await signupUser(form.email, form.password);
+      navigate("/login");
+    } catch (err) {
+      setErrors({
+        email: err?.response?.data?.error ?? "Could not create account",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-[#0d0f14] font-['DM_Sans',sans-serif] relative overflow-hidden p-6">
+      <div className="absolute w-130 h-130 rounded-full bg-blue-500 opacity-[0.18] blur-[80px] pointer-events-none -top-40 -left-28 animate-blob-drift" />
+      <div className="absolute w-100 h-100 rounded-full bg-violet-500 opacity-[0.18] blur-[80px] pointer-events-none -bottom-24 -right-20 animate-blob-2" />
+      <div className="absolute w-70 h-70 rounded-full bg-cyan-400 opacity-[0.18] blur-[80px] pointer-events-none top-1/2 left-1/2 animate-blob-drift-center" />
+
+      <div className="relative z-10 flex w-full max-w-215 rounded-3xl overflow-hidden shadow-[0_32px_80px_rgba(0,0,0,0.55),0_0_0_1px_rgba(255,255,255,0.06)] animate-card-in">
+        <div className="brand-panel-bg hidden md:flex w-85 shrink-0 bg-linear-to-br from-blue-800 via-indigo-600 to-violet-700 px-10 py-12 flex-col relative overflow-hidden">
+          <div className="w-13 h-13 mb-5 animate-icon-in">
+            <PcCase size={48} color="white" />
+          </div>
+
+          <h1 className="font-['Syne',sans-serif] text-[2rem] font-extrabold text-white tracking-tight leading-none mb-1.5">
+            LabTrack
+          </h1>
+          <p className="text-[0.78rem] text-white/55 tracking-widest uppercase font-medium mb-7">
+            ICT Department · v1.0
+          </p>
+
+          <div className="h-px bg-white/15 mb-7" />
+
+          <p className="text-[0.9rem] text-white/75 leading-relaxed mb-8">
+            Manage computers, laboratories, and inventory — all in one place.
+          </p>
+
+          <div className="flex flex-col gap-2.5 mt-auto">
+            {[
+              { icon: <Package size={13} />, label: "Inventory" },
+              { icon: <Monitor size={13} />, label: "Computers" },
+              { icon: <Building2 size={13} />, label: "Laboratories" },
+            ].map(({ icon, label }) => (
+              <span
+                key={label}
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white/10 border border-white/15 rounded-full text-[0.8rem] text-white/85 font-medium backdrop-blur-sm w-fit">
+                {icon} {label}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex-1 bg-[#111318] px-11 py-12 flex flex-col justify-center">
+          <div className="mb-9 animate-slide-up-1">
+            <h2 className="font-['Syne',sans-serif] text-[1.7rem] font-bold text-slate-100 tracking-tight mb-1.5">
+              Create an account
+            </h2>
+            <p className="text-[0.88rem] text-slate-500">
+              Sign up to start managing your inventory
+            </p>
+          </div>
+
+          <form
+            onSubmit={handleSubmit}
+            noValidate
+            className="flex flex-col gap-5 animate-slide-up-2">
+            <div
+              className={`flex flex-col gap-1.5 ${errors.email ? "field-error" : ""}`}>
+              <label
+                htmlFor="email"
+                className="text-[0.8rem] font-semibold text-slate-400 tracking-wider uppercase">
+                Email
+              </label>
+              <div className="input-group relative flex items-center">
+                <span className="input-group-icon absolute left-3.5 text-slate-600 flex pointer-events-none transition-colors duration-200">
+                  <User size={16} />
+                </span>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  placeholder="example@email.com"
+                  value={form.email}
+                  onChange={handleChange}
+                  className="field-input w-full pl-10 pr-4 py-3 bg-[#1a1d26] border border-[#252836] rounded-[10px] text-slate-200 text-[0.9rem] outline-none transition-all duration-200 placeholder:text-gray-700 focus:border-blue-500 focus:bg-[#1e2130] focus:shadow-[0_0_0_3px_rgba(59,130,246,0.12)]"
+                />
+              </div>
+              {errors.email && (
+                <span className="text-[0.76rem] text-red-400 flex items-center gap-1">
+                  {errors.email}
+                </span>
+              )}
+            </div>
+
+            <div
+              className={`flex flex-col gap-1.5 ${errors.password ? "field-error" : ""}`}>
+              <label
+                htmlFor="password"
+                className="text-[0.8rem] font-semibold text-slate-400 tracking-wider uppercase">
+                Password
+              </label>
+              <div className="input-group relative flex items-center">
+                <span className="input-group-icon absolute left-3.5 text-slate-600 flex pointer-events-none transition-colors duration-200">
+                  <Lock size={16} />
+                </span>
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="new-password"
+                  placeholder="At least 8 characters"
+                  value={form.password}
+                  onChange={handleChange}
+                  className="field-input w-full pl-10 pr-10 py-3 bg-[#1a1d26] border border-[#252836] rounded-[10px] text-slate-200 text-[0.9rem] outline-none transition-all duration-200 placeholder:text-gray-700 focus:border-blue-500 focus:bg-[#1e2130] focus:shadow-[0_0_0_3px_rgba(59,130,246,0.12)]"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  aria-label="Toggle password visibility"
+                  className="absolute right-3.5 text-slate-600 hover:text-slate-400 flex p-0 bg-transparent border-none cursor-pointer transition-colors duration-200">
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+              {errors.password && (
+                <span className="text-[0.76rem] text-red-400 flex items-center gap-1">
+                  {errors.password}
+                </span>
+              )}
+            </div>
+
+            <div
+              className={`flex flex-col gap-1.5 ${errors.confirm ? "field-error" : ""}`}>
+              <label
+                htmlFor="confirm"
+                className="text-[0.8rem] font-semibold text-slate-400 tracking-wider uppercase">
+                Confirm Password
+              </label>
+              <div className="input-group relative flex items-center">
+                <span className="input-group-icon absolute left-3.5 text-slate-600 flex pointer-events-none transition-colors duration-200">
+                  <Lock size={16} />
+                </span>
+                <input
+                  id="confirm"
+                  name="confirm"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="new-password"
+                  placeholder="••••••••"
+                  value={form.confirm}
+                  onChange={handleChange}
+                  className="field-input w-full pl-10 pr-4 py-3 bg-[#1a1d26] border border-[#252836] rounded-[10px] text-slate-200 text-[0.9rem] outline-none transition-all duration-200 placeholder:text-gray-700 focus:border-blue-500 focus:bg-[#1e2130] focus:shadow-[0_0_0_3px_rgba(59,130,246,0.12)]"
+                />
+              </div>
+              {errors.confirm && (
+                <span className="text-[0.76rem] text-red-400 flex items-center gap-1">
+                  {errors.confirm}
+                </span>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="mt-1 flex items-center justify-center gap-2 w-full py-3.5 px-6 bg-linear-to-br from-blue-600 to-indigo-600 rounded-[10px] text-white font-['Syne',sans-serif] text-[0.95rem] font-semibold tracking-wide cursor-pointer border-none shadow-[0_4px_20px_rgba(59,130,246,0.3)] transition-all duration-200 hover:opacity-90 hover:-translate-y-px hover:shadow-[0_8px_28px_rgba(59,130,246,0.4)] active:translate-y-0 disabled:opacity-60 disabled:cursor-not-allowed">
+              {isLoading ? (
+                <span className="w-4.5 h-4.5 border-2 border-white/30 border-t-white rounded-full animate-spin-slow" />
+              ) : (
+                <>
+                  Create Account <ArrowRight size={16} />
+                </>
+              )}
+            </button>
+          </form>
+
+          <p className="mt-7 text-[0.82rem] text-slate-600 text-center animate-slide-up-3">
+            Already have an account?{" "}
+            <Link
+              to="/login"
+              className="text-blue-500 font-medium hover:text-blue-400 transition-colors duration-200 no-underline">
+              Sign in
+            </Link>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Signup;

@@ -1,5 +1,5 @@
-import { createContext, useContext, useEffect, useState } from 'react';
-import { getMe, logoutUser } from '../api/axios.js';
+import { createContext, useContext, useEffect, useState } from "react";
+import { getMe, logoutUser } from "../api/axios.js";
 
 const AuthContext = createContext(null);
 
@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
       try {
         const user = await getMe();
         setUser(user);
-      } catch (error) {
+      } catch {
         setUser(null);
       } finally {
         setLoading(false);
