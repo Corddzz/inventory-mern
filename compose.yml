@@ -33,7 +33,6 @@ services:
       DB_NAME: ${DB_NAME}
       DB_PORT: ${DB_PORT}
       JWT_TOKEN_SECRET: ${JWT_TOKEN_SECRET}
-      REFRESH_TOKEN: ${REFRESH_TOKEN}
       CORS_ORIGIN: ${CORS_ORIGIN}
     develop:
       watch:
@@ -60,7 +59,7 @@ services:
       timeout: 10s
       retries: 5
     volumes:
-      - inventory:/var/lib/mysql
+      - inventory_data:/var/lib/mysql
 
 volumes:
-  inventory:
+  inventory_data:
