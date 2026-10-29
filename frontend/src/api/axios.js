@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const URL = import.meta.env.VITE_API_URL;
+const URL = import.meta.env.VITE_API_URL || "http://localhost:9000";
 
 // Backend sets the JWT as an httpOnly cookie, so every request needs to
 // carry credentials for the browser to send/receive it (frontend and
@@ -9,7 +9,11 @@ axios.defaults.withCredentials = true;
 
 export const signupUser = async (email, password, role = "user") => {
   try {
-    const { data } = await axios.post(`${URL}/signup`, { email, password, role });
+    const { data } = await axios.post(`${URL}/signup`, {
+      email,
+      password,
+      role,
+    });
     return data;
   } catch (error) {
     console.error("Error signing up:", error);
@@ -106,6 +110,16 @@ export const fetchRoom = async () => {
     return data;
   } catch (error) {
     console.error("Error fetching rooms:", error);
+    throw error;
+  }
+};
+
+export const fetchComputer = async () => {
+  try {
+    const { data } = await axios.get(`${URL}/computers`);
+    return data;
+  } catch (error) {
+    console.error("Error fetching computers:", error);
     throw error;
   }
 };
