@@ -20,9 +20,9 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      <ProtectedRoute>
-        <App />
-      </ProtectedRoute>
+      // <ProtectedRoute>
+      <App />
+      // </ProtectedRoute>
     ),
     children: [
       { index: true, Component: Home },
