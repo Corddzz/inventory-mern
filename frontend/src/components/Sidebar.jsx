@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink } from "react-router";
 import {
   FileChartLine,
   LaptopMinimal,
@@ -7,76 +7,65 @@ import {
   Building2,
 } from "lucide-react";
 
+import { HomeIcon, ComputerDesktopIcon } from "@heroicons/react/24/outline";
+
 const Sidebar = () => {
   const navLinks = [
     {
-      id: 1,
-      link: "/inventory",
-      icon: <Package size={18} className="shrink-0" />,
-      label: "Inventory",
+      path: "/home",
+      icon: HomeIcon,
+      name: "Dashboard",
     },
     {
-      id: 2,
-      link: "/computers",
-      icon: <LaptopMinimal size={18} className="shrink-0" />,
-      label: "Computers",
+      path: "/inventory",
+      icon: Package,
+      name: "Inventory",
     },
     {
-      id: 3,
-      link: "/laboratories",
-      icon: <Building2 size={18} className="shrink-0" />,
-      label: "Laboratories",
+      path: "/computers",
+      icon: LaptopMinimal,
+      name: "Computers",
     },
     {
-      id: 4,
-      link: "/reports",
-      icon: <FileChartLine size={18} className="shrink-0" />,
-      label: "Reports",
+      path: "/laboratories",
+      icon: Building2,
+      name: "Laboratories",
+    },
+    {
+      path: "/reports",
+      icon: FileChartLine,
+      name: "Reports",
     },
   ];
 
-  const navClass = ({ isActive }) =>
-    `flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors duration-150 ${
-      isActive
-        ? "bg-cyan-500/20 text-cyan-400 font-semibold"
-        : "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"
-    }`;
-
   return (
-    <aside
-      className="flex flex-col bg-zinc-900 border-r border-zinc-800
-        h-screen sticky top-0 shrink-0 w-52"
-    >
-      <div className="flex items-center gap-2.5 px-3 py-4 border-b border-zinc-800">
-        <PcCase size={20} className="text-cyan-400 shrink-0" />
-        <div className="overflow-hidden">
-          <div className="font-bold text-sm tracking-wide text-zinc-100 whitespace-nowrap">
-            LabTrack
-          </div>
-          <div className="text-[10px] font-mono text-zinc-500 whitespace-nowrap">
-            v1.0 · ICT Dept
-          </div>
-        </div>
-      </div>
+    <aside className="drawer-side is-drawer-close:overflow-visible">
+      <label
+        htmlFor="my-drawer-4"
+        aria-label="close sidebar"
+        className="drawer-overlay"
+      ></label>
+      <div className="flex min-h-full flex-col items-start bg-base-200 is-drawer-close:w-14 is-drawer-open:w-64">
+        {/* Sidebar content here */}
+        <ul className="menu w-full grow">
+          {navLinks.map(({ name, path, icon: Icon }) => (
+            <li key={path}>
+              <NavLink
+                to={path}
+                className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+                data-tip={name}
+              >
+                <Icon
+                  size={18}
+                  className="my-1.5 inline-block size-4 shrink-0"
+                />
 
-      <div className="px-4 pt-4 pb-1 overflow-hidden">
-        <span className="text-[10px] tracking-widest uppercase text-zinc-600 font-mono whitespace-nowrap">
-          Main
-        </span>
-      </div>
-
-      <nav className="flex-1 px-2 py-2">
-        <ul className="flex flex-col gap-1">
-          {navLinks.map(({ id, link, icon, label }) => (
-            <NavLink key={id} to={link} end className={navClass}>
-              {icon}
-              <span className="text-sm whitespace-nowrap overflow-hidden">
-                {label}
-              </span>
-            </NavLink>
+                <span className="is-drawer-close:hidden">{name}</span>
+              </NavLink>
+            </li>
           ))}
         </ul>
-      </nav>
+      </div>
     </aside>
   );
 };
