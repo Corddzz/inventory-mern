@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router";
+import { createBrowserRouter, Navigate, RouterProvider } from "react-router";
 import "./App.css";
 import App from "./App";
 import Home from "./pages/Home";
@@ -25,7 +25,8 @@ const router = createBrowserRouter([
       // </ProtectedRoute>
     ),
     children: [
-      { index: true, Component: Home },
+      { index: true, element: <Navigate to="/home" replace /> },
+      { path: "home", Component: Home },
       { path: "inventory", Component: Inventory },
       { path: "computers", Component: Computer },
       { path: "laboratories", Component: Laboratory },
