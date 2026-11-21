@@ -1,14 +1,10 @@
-import dotenv from "dotenv";
-import path from "path";
-import { fileURLToPath } from "url";
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import inventoryRoutes from "./src/routes/inventoryRoutes.js";
 import authRoutes from "./src/routes/authRoutes.js";
 import computerRoutes from "./src/routes/computerRoutes.js";
-
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT;
