@@ -13,20 +13,15 @@ import Signup from "./pages/Signup";
 import ProtectedRoute from "./components/ProtectedRoutes";
 import { AuthProvider } from "./context/AuthContext";
 
+// REACT ROUTER (DATA MODE)
 const router = createBrowserRouter([
   { path: "/login", Component: Login },
   { path: "/signup", Component: Signup },
-
   {
     path: "/",
-    element: (
-      // <ProtectedRoute>
-      <App />
-      // </ProtectedRoute>
-    ),
+    component: App,
     children: [
-      { index: true, element: <Navigate to="/home" replace /> },
-      { path: "home", Component: Home },
+      { index: true, component: Home },
       { path: "inventory", Component: Inventory },
       { path: "computers", Component: Computer },
       { path: "laboratories", Component: Laboratory },
