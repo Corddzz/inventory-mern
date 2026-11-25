@@ -10,6 +10,7 @@ import Laboratory from "./pages/Laboratory";
 import LaboratoryClaude from "./pages/LaboratoryClaude";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoutes";
 import { AuthProvider } from "./context/AuthContext";
 
@@ -19,15 +20,19 @@ const router = createBrowserRouter([
   { path: "/signup", Component: Signup },
   {
     path: "/",
-    component: App,
+    Component: App,
     children: [
-      { index: true, component: Home },
+      { index: true, Component: Home },
       { path: "inventory", Component: Inventory },
       { path: "computers", Component: Computer },
       { path: "laboratories", Component: Laboratory },
       { path: "reports", Component: Reports },
       { path: "labtrack", Component: LaboratoryClaude },
     ],
+  },
+  {
+    path: "*",
+    Component: NotFound,
   },
 ]);
 
